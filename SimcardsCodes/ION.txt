@@ -1,0 +1,44 @@
+ Ion.with(getApplicationContext())
+                        .load("http://api.nytimes.com/svc/topstories/v2/"+spinner_list.get(position)+".json?api-key=8e7efd253a3a47c5badb8e98a705595f")
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                // do stuff with the result or error
+                                if (e == null) {
+                                   
+                                    JsonArray j = result.getAsJsonArray("results");
+                                    ArrayList<Item>mylistArray=new ArrayList<>();
+
+
+                                   for (int i = 0; i < j.size(); i++) {
+                                       String title=((JsonObject)j.get(i)).get("title").toString().replace("\"", "");
+                                        String published_date=((JsonObject)j.get(i)).get("published_date").toString().replace("\"", "");
+
+                                        JsonObject p= (JsonObject) j.get(i);
+                                     JsonArray k=p.getAsJsonArray("multimedia");
+                                        JsonObject ur= (JsonObject) k.get(k.size()-1);
+                                        String url=ur.get("url").toString().replace("\"", "");
+
+
+
+
+
+
+
+                                        mylistArray.add(new Item(title,published_date,url));
+                                    }
+                                    MyListAdapter myListAdapter=new MyListAdapter(getApplicationContext(),mylistArray);
+
+                                    myList.setAdapter(myListAdapter);
+                                }
+                                else
+                                {
+
+                                    Toast toast =Toast.makeText(getApplicationContext(),"No internet connection available",Toast.LENGTH_LONG);
+                                    toast.show();
+
+                                }
+
+                            }
+                        });

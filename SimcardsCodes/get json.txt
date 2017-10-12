@@ -1,0 +1,26 @@
+private boolean parseResult(String result) {
+            if (result == null)
+                return false;
+            try {
+                JSONObject response = new JSONObject(result);
+                JSONArray posts = response.optJSONArray("results");
+                MainGridItem item;
+                for (int i = 0; i < posts.length(); i++) {
+                    JSONObject post = posts.optJSONObject(i);
+                    item = new MainGridItem();
+
+                    JSONArray imgs = post.getJSONArray("multimedia");
+                    JSONObject imgobj = imgs.getJSONObject(imgs.length() - 1);
+                    String img = imgobj.optString("url");
+
+                    item.setTitle(post.optString("title"));
+                    item.setImageURL(img);
+                    item.setPublished_date(post.getString("published_date").substring(0, 10));
+
+                    mGridData.add(item);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }

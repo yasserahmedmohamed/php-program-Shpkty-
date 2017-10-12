@@ -1,0 +1,35 @@
+Ion.with(this)
+                .load("http://api.themoviedb.org/3/movie/" + sortType + "?api_key=")
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // do stuff with the result or error
+                        if (e == null) {
+                            JsonArray j = result.getAsJsonArray("results");
+                            movies.clear();
+
+                            for (int i = 0; i < j.size(); i++) {
+                                movie=new Movie();
+                                movie.setPoster_path("http://image.tmdb.org/t/p/w342/" + (((JsonObject) j.get(i)).get("poster_path").toString()).replace("\"", ""));
+                                movie.setOver_view((((JsonObject) j.get(i)).get("overview").toString()).replace("\"", "").replace("\\", "").replace("/", ""));
+                                movie.setOriginal_title((((JsonObject) j.get(i)).get("original_title").toString()).replace("\"", "").replace("\\", "").replace("/", ""));
+                                movie.setVote_average((((JsonObject) j.get(i)).get("vote_average").toString()));
+                                movie.setRelease_date((((JsonObject) j.get(i)).get("release_date").toString()).replace("\"", "").replace("\\", "").replace("/", ""));
+                                movie.setId((((JsonObject) j.get(i)).get("id").toString()));
+                                movies.add(movie);
+                            }
+
+                            movieAdapter.notifyDataSetChanged();
+                            loadIndicator.setVisibility(View.INVISIBLE);
+                        }
+                        else
+                        {
+                            loadIndicator.setVisibility(View.INVISIBLE);
+                            Toast toast =Toast.makeText(getContext(),"No internet connection has been available",Toast.LENGTH_LONG);
+                            toast.show();
+
+                        }
+
+                    }
+                });
